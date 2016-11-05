@@ -1,0 +1,9 @@
+package hbase;
+
+public class RankMaker {
+	
+	public RankMaker(int ntop, String[] langs, int mode, String dirPath){
+		
+	}
+
+}

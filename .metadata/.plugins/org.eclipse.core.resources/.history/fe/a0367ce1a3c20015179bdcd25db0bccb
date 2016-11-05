@@ -1,0 +1,37 @@
+package hbase;
+
+import java.text.Collator;
+import java.util.HashMap;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
+public class RankMaker {
+	private HashMap<String,TreeMap<String, Integer>> rank;
+	private String dirPath;
+	private int mode;
+	private String[] langs;
+	private int ntop;
+
+	public RankMaker(int ntop, String[] langs, int mode, String dirPath){
+		this.ntop=ntop;
+		this.langs=langs;
+		this.mode=mode;
+		this.dirPath=dirPath;
+		this.rank = new HashMap<String,TreeMap<String, Integer>>();
+	}
+
+	public void addData(String lang, String hashtag, int counted){
+		if(!rank.containsKey(lang)){
+			rank.put(lang, new TreeMap<String,Integer>(Collator.getInstance()));
+		}
+		TreeMap<String, Integer> windowRank=rank.get(lang);
+		if (windowRank.containsKey(hashtag)){
+			int myCount=windowRank.get(hashtag);
+			windowRank.put(hashtag, counted+myCount);
+		} else {
+			windowRank.put(hashtag, counted);
+		}
+
+	}
+
+}

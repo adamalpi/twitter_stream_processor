@@ -1,0 +1,104 @@
+package hbase;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.Collator;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Map.Entry;
+
+public class RankMaker {
+	private HashMap<String,TreeMap<String, Integer>> rank;
+	private String dirPath;
+	private int mode;
+	private String[] langs;
+	private int ntop;
+
+	public RankMaker(int ntop, String[] langs, int mode, String dirPath){
+		this.ntop=ntop;
+		this.langs=langs;
+		this.mode=mode;
+		this.dirPath=dirPath;
+		this.rank = new HashMap<String,TreeMap<String, Integer>>();
+	}
+
+	static <K,V extends Comparable<? super V>> SortedSet<Map.Entry<K,V>> entriesSortedByValues(Map<K,V> map) {
+		SortedSet<Map.Entry<K,V>> sortedEntries = new TreeSet<Map.Entry<K,V>>(
+				new Comparator<Map.Entry<K,V>>() {
+					public int compare(Map.Entry<K,V> e1, Map.Entry<K,V> e2) {
+						int res = ((Integer)e1.getValue()).compareTo((Integer) e2.getValue());
+						if (e1.getKey().equals(e2.getKey())) {
+							return res; // Code will now handle equality properly
+						} else {
+							return res != 0 ? -1*res : 1; // While still adding all entries
+						}
+					}
+				}
+				);
+		sortedEntries.addAll(map.entrySet());
+		return sortedEntries;
+	}
+
+	public void addData(String lang, String hashtag, int counted){
+		if(!rank.containsKey(lang)){
+			rank.put(lang, new TreeMap<String,Integer>(Collator.getInstance()));
+		}
+		TreeMap<String, Integer> windowRank=rank.get(lang);
+		if (windowRank.containsKey(hashtag)){
+			int myCount=windowRank.get(hashtag);
+			windowRank.put(hashtag, counted+myCount);
+			System.out.println(lang+":"+hashtag+":"+(counted+myCount));
+		} else {
+			windowRank.put(hashtag, counted);
+			System.out.println(lang+":"+hashtag+":"+counted);
+		}
+		
+
+	}
+
+	public void makeRankAndWrite(long start, long end) throws IOException{
+		TreeMap<String, Integer> entry;
+		String line;
+		File f = new File(dirPath+"/15_query"+mode+".out");
+		if(!f.exists()) 
+			f.createNewFile();
+		FileWriter fw = new FileWriter(f,true); //the true will append the new data
+
+
+		if (this.mode==1){
+			if (this.rank.containsKey(this.langs[0])){
+				entry = rank.get(langs[0]);
+				//Time to write a new line with the last rank
+				int i=ntop;
+				System.out.println(this.langs[0]);
+				System.out.println("hey");
+				for (Entry<String, Integer> subEntry : entriesSortedByValues(entry)){
+					if (i>=this.ntop){
+						break;
+					}
+					line=langs[0]+","+(i+1)+","+subEntry.getKey()+","+start+","+end;
+					fw.write(line+"\n");//appends the string to the file
+					System.out.println("new line: "+line);
+
+					
+					i++;
+				}
+
+			}
+
+		} else if(this.mode==2){
+
+		} else if(this.mode==3){
+
+		}
+		fw.close();
+
+	}
+
+}

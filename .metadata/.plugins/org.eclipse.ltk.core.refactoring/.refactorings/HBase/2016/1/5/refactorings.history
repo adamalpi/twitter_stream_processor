@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename compilation unit &apos;hbase.rankMaker.java&apos; to &apos;RankMaker.java&apos;&#x0A;- Original project: &apos;HBase&apos;&#x0A;- Original element: &apos;hbase.rankMaker.java&apos;&#x0A;- Renamed element: &apos;hbase.RankMaker.java&apos;" description="Rename compilation unit &apos;rankMaker.java&apos;" flags="2" id="org.eclipse.jdt.ui.rename.compilationunit" input="/src\/main\/java&lt;hbase{rankMaker.java" name="RankMaker.java" references="false" stamp="1453643217497" version="1.0"/>
+</session>

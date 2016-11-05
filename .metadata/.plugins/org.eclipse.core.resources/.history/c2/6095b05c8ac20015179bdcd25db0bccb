@@ -1,0 +1,20 @@
+package hbase;
+
+import org.apache.hadoop.hbase.util.Bytes;
+
+public class KeyGenerator {
+	
+	
+	
+	
+	
+	public byte[] generateKey(String hashtag, String lang, long timestamp) {
+	byte[] key = new byte[44];
+	System.arraycopy(Bytes.toBytes(hashtag),0,key,0,hashtag.length());
+	System.arraycopy(Bytes.toBytes(lang),0,key,22,lang.length());
+	System.arraycopy(Bytes.toBytes(timestamp),0,key,30,8);
+	return key;
+	}
+
+
+}

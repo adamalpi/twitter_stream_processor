@@ -1,0 +1,108 @@
+package hbase;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.MasterNotRunningException;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.util.Bytes;
+
+public class Main {
+
+	public static void main(String[] args) {
+		/*
+		String modeS=args[0] ="1";//mode
+		String startTS=args[1]="50";//startTS
+		String endTS=args[2]="100";//endTS
+		String nTop=args[3]="2";//ntop
+		String lang=args[4]="es";//lang
+		String dataFolder=args[5]="";//dataFolder
+*/
+		String modeS ="4";//mode
+		String startTS="50";//startTS
+		String endTS="100";//endTS
+		String nTop="2";//ntop
+		String lang="es";//lang
+		String dataFolder="/tmp/testhbase/";//dataFolder
+
+
+//		if (args.length<6){
+//			System.out.println("You need to put 6 arguments");
+//			System.exit(1);
+//		}
+
+		int mode=-1;
+		try {
+			mode = Integer.parseInt(modeS);
+		} catch (NumberFormatException e) {
+			System.err.println("Argument n°1: " + modeS + " must be an integer.");
+			System.exit(1);
+		}
+
+		//check dir path
+		File theDir = new File(dataFolder);
+		try{
+			if (!theDir.exists()) {
+				//FileUtils.deleteDirectory(theDir);
+				System.out.println("Creating directory: " + dataFolder);
+				boolean result = false;
+
+				theDir.mkdir();
+				result = true;
+				if(result)  
+					System.out.println("DIR "+dataFolder+ " created");
+			}  
+		} 
+		catch(SecurityException se){se.printStackTrace();} 
+
+
+		if (mode==4){
+			//create db-table if not exists
+			Configuration conf = HBaseConfiguration.create();
+			HBaseAdmin admin;
+			try {
+				admin = new HBaseAdmin(conf);
+				
+				byte[] TABLE = Bytes.toBytes("Rankings");
+				//admin.disableTable(TABLE); //to delete...
+				//admin.deleteTable(TABLE);
+				if (!admin.tableExists(TableName.valueOf(TABLE))) {
+					  System.out.println(new String(TABLE, "UTF-8")
+							  + " table Does Not Exist. We create it.");
+					  byte[] CF = Bytes.toBytes("BasicData");
+						HTableDescriptor table = new HTableDescriptor(TableName.valueOf(TABLE));
+						HColumnDescriptor family = new HColumnDescriptor(CF);
+						//family.setMaxVersions(10);  // Default is 3. 
+						table.addFamily(family);
+						admin.createTable(table);
+					}
+			} catch (MasterNotRunningException e) {
+				e.printStackTrace();
+			} catch (ZooKeeperConnectionException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			//fill table with files
+		} else {
+			System.out.println("First argument must be in {1,2,3,4} and not to be: "+modeS);
+			System.exit(1);
+		}
+
+
+
+	}
+
+
+
+}
+

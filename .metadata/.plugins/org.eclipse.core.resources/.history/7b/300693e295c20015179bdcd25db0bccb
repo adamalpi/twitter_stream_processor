@@ -1,0 +1,263 @@
+package hbase;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.MasterNotRunningException;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.client.HConnection;
+import org.apache.hadoop.hbase.client.HConnectionManager;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.util.Bytes;
+
+public class Main {
+
+	public static void main(String[] args) {
+		/*
+		String modeS=args[0] ="1";//mode
+		String startTS=args[1]="50";//startTS
+		String endTS=args[2]="100";//endTS
+		String nTop=args[3]="2";//ntop
+		String lang=args[4]="es";//lang
+		String dataFolder=args[5]="";//dataFolder
+		 */
+		String modeS ="1";//mode
+		String startTS="50";//startTS
+		String endTS="100";//endTS
+		String nTop="2";//ntop
+		String lang="es";//lang		
+		String[] langs = (lang).split(",");
+		//String dataFolder="/tmp/testhbase/";//dataFolder
+		String dataFolder = "/home/adam/practicaTwitter/";
+
+
+		//		if (args.length<6){
+		//			System.out.println("You need to put 6 arguments");
+		//			System.exit(1);
+		//		}
+
+		int mode=-1;
+		try {
+			mode = Integer.parseInt(modeS);
+		} catch (NumberFormatException e) {
+			System.err.println("Argument n°1: " + modeS + " must be an integer.");
+			System.exit(1);
+		}
+
+		//check dir path
+		File theDir = new File(dataFolder);
+		try{
+			if (!theDir.exists()) {
+				//FileUtils.deleteDirectory(theDir);
+				System.out.println("Creating directory: " + dataFolder);
+				boolean result = false;
+
+				theDir.mkdir();
+				result = true;
+				if(result)  
+					System.out.println("DIR "+dataFolder+ " created");
+			}  
+		} 
+		catch(SecurityException se){se.printStackTrace();} 
+
+
+		if (mode==4){
+			//create db-table if not exists
+			Configuration conf = HBaseConfiguration.create();
+			HBaseAdmin admin;
+			try {
+				admin = new HBaseAdmin(conf);
+
+				byte[] TABLE = Bytes.toBytes("Rankings");
+
+				if (admin.tableExists(TableName.valueOf(TABLE))) {
+					admin.disableTable(TABLE); //to delete...
+					admin.deleteTable(TABLE);
+				}
+				System.out.println(new String(TABLE, "UTF-8")
+						+ " table Does Not Exist. We create it.");
+				byte[] CF = Bytes.toBytes("data");
+				HTableDescriptor table = new HTableDescriptor(TableName.valueOf(TABLE));
+				HColumnDescriptor family = new HColumnDescriptor(CF);
+				family.setMaxVersions(10);  // Default is 3.
+				table.addFamily(family);
+				admin.createTable(table);
+
+				System.out.println("termine");
+
+			} catch (MasterNotRunningException e) {
+				e.printStackTrace();
+			} catch (ZooKeeperConnectionException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			//fill table with files
+			BufferedReader reader;
+			File fr;
+			byte[] key;
+			String line;
+			Rank rank;
+			byte[] valueLang;
+			byte[] valueData;
+			KeyGenerator kg = new KeyGenerator();
+			Put put;
+			byte[] column = Bytes.toBytes("LANG");
+			byte[] column2 = Bytes.toBytes("COUNT");
+			byte[] CF = Bytes.toBytes("data");
+			byte[] TABLE = Bytes.toBytes("Rankings");
+
+			//CONNECT
+			Configuration conf2 = HBaseConfiguration.create();
+			HConnection conn;
+			HTable tableWrite=null;
+
+			try {
+				conn = HConnectionManager.createConnection(conf2);
+				tableWrite = new HTable(TableName.valueOf(TABLE),conn);
+
+			} catch (IllegalArgumentException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+
+			for (String l: langs){
+				String filePath = dataFolder+"/"+l+".out";
+				fr=new File(filePath);
+				try {
+					reader = new BufferedReader(new FileReader(fr));
+
+					while ((line = reader.readLine()) != null) {
+						System.out.println(line);
+						rank= new Rank(line);						
+						key = kg.generateKey(rank.getLang(), rank.getTimestamp());
+						valueLang = Bytes.toBytes(rank.getLang()); 
+						put = new Put(key);
+						put.add(CF,column,valueLang);
+						for (int i = 0; i<rank.getHashtag().length;i++){
+							if (rank.getCount()[i]>0){
+								valueData = Bytes.toBytes(rank.getCount()[i]+":"+rank.getHashtag()[i]);
+								put.add(CF,column2,valueData);
+								tableWrite.put(put);
+							}
+
+						}
+					}
+
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
+
+
+		} else if (mode==1){
+			//CONNECT
+			KeyGenerator kg = new KeyGenerator();
+			Put put;
+			byte[] column = Bytes.toBytes("LANG");
+			byte[] column2 = Bytes.toBytes("COUNT");
+			byte[] CF = Bytes.toBytes("data");
+			byte[] TABLE = Bytes.toBytes("Rankings");
+
+			//CONNECT
+			Configuration conf2 = HBaseConfiguration.create();
+			HConnection conn;
+			HTable tableRead=null;
+			Result result = null;
+			try {
+				conn = HConnectionManager.createConnection(conf2);
+				tableRead = new HTable(TableName.valueOf(TABLE),conn);
+//				byte[] keytest = kg.generateKey("es", 1700000L);
+//				Get get = new Get(keytest);
+//				get.setMaxVersions(5);
+//				result = tableRead.get(get);
+
+				//GET
+				//HTable table;
+
+
+				//result.getRow()
+
+//				byte[] langb = result.getValue(CF,Bytes.toBytes("LANG"));
+//				System.out.println(Bytes.toString(langb));
+//
+//				byte[] count = result.getValue(CF,Bytes.toBytes("COUNT"));
+//				System.out.println(Bytes.toString(count));
+//
+//				List<Cell> cells = result.getColumnCells(CF, Bytes.toBytes("COUNT"));
+//				for (Cell cell: cells){
+//					byte[] valuesss = CellUtil.cloneValue(cell);
+//					String[] elems = Bytes.toString(valuesss).split(":",2);
+//					System.out.println(Integer.parseInt(elems[0])+1);
+//					System.out.println(elems[1]);
+//				}
+
+				Scan scan = new Scan(kg.generateKey("es", 1550000L),kg.generateKey("es", 1700000L));
+				scan.setMaxVersions(5);
+				ResultScanner rs = tableRead.getScanner(scan);
+				Result res = rs.next();
+				byte[] langb,count;
+				List<Cell> cells;
+				while (res!=null){
+					System.out.println("new");
+					langb = res.getValue(CF,Bytes.toBytes("LANG"));
+					System.out.println(Bytes.toString(langb));
+
+					count = res.getValue(CF,Bytes.toBytes("COUNT"));
+					System.out.println(Bytes.toString(count));
+
+					cells = res.getColumnCells(CF, Bytes.toBytes("COUNT"));
+					for (Cell cell: cells){
+						byte[] valuesss = CellUtil.cloneValue(cell);
+						String[] elems = Bytes.toString(valuesss).split(":",2);
+						System.out.println(Integer.parseInt(elems[0]));
+
+						//System.out.println(Integer.parseInt(elems[0])+1);
+						System.out.println(elems[1]);
+					}
+					// Do something with the result. 
+					res = rs.next();
+				}    
+			} catch (IllegalArgumentException e1) {
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+
+		} else {
+			System.out.println("First argument must be in {1,2,3,4} and not to be: "+modeS);
+			System.exit(1);
+		}
+
+
+
+	}
+
+
+
+}
+

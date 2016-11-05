@@ -1,0 +1,28 @@
+package hbase;
+
+public class Rank {
+	
+	private String[] hashtag;
+	private int[] count;
+	private String lang;
+	private Long timestamp;
+
+
+	public Rank(String s){
+		String[] c = (s).split(",");
+		this.timestamp = Long.parseLong(c[0]);
+		this.lang = c[1];
+		this.hashtag[0]= c[2];
+		this.count[0]= Integer.parseInt(c[3]);
+		this.hashtag[0]= c[4];
+		this.count[0]= Integer.parseInt(c[5]);
+		this.hashtag[0]= c[6];
+		this.count[0]= Integer.parseInt(c[7]);
+	}
+
+
+
+
+}
+
+

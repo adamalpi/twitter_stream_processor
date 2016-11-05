@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.util.NavigableMap"/>
+<fullyQualifiedTypeName name="storm.starter.util.StormRunner"/>
+<fullyQualifiedTypeName name="storm.StormRunner"/>
+<fullyQualifiedTypeName name="java.util.UUID"/>
+<fullyQualifiedTypeName name="ch.qos.logback.classic.net.SyslogAppender"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="backtype.storm.topology.base.BaseRichSpout"/>
+<fullyQualifiedTypeName name="backtype.storm.tuple.Values"/>
+<fullyQualifiedTypeName name="backtype.storm.tuple.Fields"/>
+<fullyQualifiedTypeName name="AvailableCurrency"/>
+<fullyQualifiedTypeName name="java.util.Currency"/>
+<fullyQualifiedTypeName name="AvailableCurrency.Currency"/>
+<fullyQualifiedTypeName name="backtype.storm.topology.TopologyBuilder"/>
+<fullyQualifiedTypeName name="ConverterBolt"/>
+<fullyQualifiedTypeName name="CurrencySpout"/>
+<fullyQualifiedTypeName name="backtype.storm.LocalCluster"/>
+<fullyQualifiedTypeName name="backtype.storm.Config"/>
+<fullyQualifiedTypeName name="backtype.storm.utils.Utils"/>
+<fullyQualifiedTypeName name="backtype.storm.topology.base.BaseRichBolt"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="org.apache.commons.io.FileUtils"/>
+<fullyQualifiedTypeName name="java.text.Collator"/>
+<fullyQualifiedTypeName name="java.util.Arrays"/>
+<fullyQualifiedTypeName name="storm.kafkaConsumerSpout"/>
+<fullyQualifiedTypeName name="storm.windowMakerBolt"/>
+<fullyQualifiedTypeName name="storm.hashtagCounterBolt"/>
+<fullyQualifiedTypeName name="storm.rankMakerBolt"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.HConnectionManager"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.HConnection"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.HTable"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.Put"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.Result"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.Get"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.Cell"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.CellUtil"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.util.Bytes"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.ResultScanner"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.filter.Filter"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.filter.SingleColumnValueFilter"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.client.Scan"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.filter.RowFilter"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.filter.RegexStringComparator"/>
+<fullyQualifiedTypeName name="org.apache.hadoop.hbase.filter.FilterList"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+</qualifiedTypeNameHistroy>
